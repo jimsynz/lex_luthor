@@ -54,36 +54,58 @@ defmodule LexLuthor do
 
     # Find the longest matching rule. This could
     # probably be made a whole lot less enumeratey.
-    match = rules_for_state(rules, current_state)
+    matches = rules_for_state(rules, current_state)
       |> matching_rules(string)
       |> apply_matches(string)
       |> longest_match_first
-      |> Enum.at(0)
+
+    process_matches module, rules, matches, string, lexer, Enum.count(matches)
+  end
+
+  defp process_matches(_, _, _, string, _, count) when count == 0 do
+    { :error, "String not in language: #{inspect string}"}
+  end
+
+  defp process_matches(module, rules, matches, string, lexer, count) when count > 0 do
+    match = Enum.at matches, 0
 
     # Execute the matches' action.
     {len, value, fun} = match
     result = apply(module, fun, [value])
 
-    # Modify the lexer state as needed.
-    cond do
-      is_nil(result) ->
-        lexer = pop_state lexer
-      is_atom(result) ->
-        lexer = push_state lexer, result
-      { _token, _value } = result ->
-        lexer = push_token lexer, result
-    end
+    lexer = process_result result, lexer
 
-    # Increment lexer position
-    lexer = %State{ pos: lexer.pos + len, states: lexer.states, tokens: lexer.tokens }
+    case lexer do
+      { :error, _ } ->
+        lexer
+      _ ->
+        # Increment lexer position
+        lexer = %State{ pos: lexer.pos + len, states: lexer.states, tokens: lexer.tokens }
 
-    # Are we at the end of the string?
-    if String.length(string) == len do
-      Enum.reverse lexer.tokens
-    else
-      { _ , new_string } = String.split_at string, len
-      do_lex module, rules, new_string, lexer
+        # Are we at the end of the string?
+        if String.length(string) == len do
+          { :ok, Enum.reverse lexer.tokens }
+        else
+          { _ , new_string } = String.split_at string, len
+          do_lex module, rules, new_string, lexer
+        end
     end
+  end
+
+  defp process_result(result, lexer) when is_nil(result) do
+    pop_state lexer
+  end
+
+  defp process_result(result, lexer) when is_atom(result) do
+    push_state lexer, result
+  end
+
+  defp process_result(result, lexer) when is_tuple(result) do
+    push_token lexer, result
+  end
+
+  defp process_result result, _ do
+    { :error, "Invalid result from action: #{inspect result}"}
   end
 
   defp push_token lexer, token do

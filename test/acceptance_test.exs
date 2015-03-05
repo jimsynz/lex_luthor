@@ -1,4 +1,4 @@
-defmodule LexLuthorTest do
+defmodule AcceptanceTest do
   import TestHelpers
   use ExUnit.Case, async: true
 
@@ -21,7 +21,11 @@ defmodule LexLuthorTest do
       tvalue = Map.get token, :value
 
       test "String #{inspect(source)} results in token #{inspect(token)}" do
-        result = Enum.at(ExampleLexer.lex(unquote(source)), 0)
+        result = ExampleLexer.lex unquote(source)
+        {ok, result} = result
+        assert ok == :ok
+
+        result = Enum.at(result, 0)
 
         rname  = Map.get result, :name
         rvalue = Map.get result, :value

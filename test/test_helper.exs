@@ -37,10 +37,13 @@ defmodule ExampleLexer do
   defrule ~r/^0/,                      fn(_) -> { :integer, 0 } end
 
   # white space
-  defrule ~r/^[ \t]+/,                fn(e) -> { :ws, String.length(e) } end
+  defrule ~r/^[ \t]+/,                 fn(e) -> { :ws, String.length(e) } end
   defrule ~r/^\r\n/,                   fn(_) -> { :nl, 1 } end
   defrule ~r/^\r/,                     fn(_) -> { :nl, 1 } end
   defrule ~r/^\n/,                     fn(_) -> { :nl, 1 } end
+
+  # bogus action
+  defrule ~r/^BOGUS_ACTION/,           fn(_) -> "WAT" end
 end
 
 ExUnit.start()
