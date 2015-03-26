@@ -4,11 +4,11 @@ defmodule LexLuthor do
   @action_no 0
 
   defmodule State do
-    defstruct pos: 0, states: [nil], tokens: []
+    defstruct pos: 0, line: 1, states: [nil], tokens: []
   end
 
   defmodule Token do
-    defstruct pos: 0, name: nil, value: nil
+    defstruct pos: 0, line: 1, name: nil, value: nil
   end
 
   defmacro __using__(_opts) do
@@ -80,7 +80,8 @@ defmodule LexLuthor do
         lexer
       _ ->
         # Increment lexer position
-        lexer = %State{ pos: lexer.pos + len, states: lexer.states, tokens: lexer.tokens }
+        line = (String.slice(string, 0, len) |> String.split(~r{(\r|\n|\r\n)}) |> Enum.count) + lexer.line
+        lexer = %State{ pos: lexer.pos + len, line: line, states: lexer.states, tokens: lexer.tokens }
 
         # Are we at the end of the string?
         if String.length(string) == len do
@@ -110,17 +111,17 @@ defmodule LexLuthor do
 
   defp push_token lexer, token do
     { tname, tvalue } = token
-    token = %Token{ pos: lexer.pos, name: tname, value: tvalue }
-    %State{ pos: lexer.pos, states: lexer.states, tokens: [ token | lexer.tokens ] }
+    token = %Token{ pos: lexer.pos, line: lexer.line, name: tname, value: tvalue }
+    %State{ pos: lexer.pos, line: lexer.line, states: lexer.states, tokens: [ token | lexer.tokens ] }
   end
 
   defp push_state lexer, state do
-    %State{ pos: lexer.pos, states: [ state | lexer.states ], tokens: lexer.tokens }
+    %State{ pos: lexer.pos, line: lexer.line, states: [ state | lexer.states ], tokens: lexer.tokens }
   end
 
   defp pop_state lexer do
     [ _ | states ] = lexer.states
-    %State{ pos: lexer.pos, states: states, tokens: lexer.tokens }
+    %State{ pos: lexer.pos, line: lexer.line, states: states, tokens: lexer.tokens }
   end
 
   defp rules_for_state rules, state do
