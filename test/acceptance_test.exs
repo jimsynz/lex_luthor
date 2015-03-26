@@ -34,4 +34,12 @@ defmodule AcceptanceTest do
       end
   end
 
+  test "String #{inspect "foo\nbar"} has correct line numbers" do
+    {ok, tokens} = ExampleLexer.lex "'foo'\n'bar'"
+    assert ok == :ok
+
+    token = List.last tokens
+    assert token.line == 2
+  end
+
 end

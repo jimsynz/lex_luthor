@@ -80,7 +80,7 @@ defmodule LexLuthor do
         lexer
       _ ->
         # Increment lexer position
-        line = (String.slice(string, 0, len) |> String.split(~r{(\r|\n|\r\n)}) |> Enum.count) + lexer.line
+        line = (String.slice(string, 0, len) |> String.split(~r{(\r|\n|\r\n)}) |> Enum.count) - 1 + lexer.line
         lexer = %State{ pos: lexer.pos + len, line: line, states: lexer.states, tokens: lexer.tokens }
 
         # Are we at the end of the string?
