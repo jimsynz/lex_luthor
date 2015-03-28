@@ -81,7 +81,7 @@ defmodule LexLuthor do
       _ ->
         # Increment lexer position
         line = (String.slice(string, 0, len) |> String.split(~r{(\r|\n|\r\n)}) |> Enum.count) - 1 + lexer.line
-        lexer = %State{ pos: lexer.pos + len, line: line, states: lexer.states, tokens: lexer.tokens }
+        lexer = Map.merge lexer, %{pos: lexer.pos + len, line: line}
 
         # Are we at the end of the string?
         if String.length(string) == len do
@@ -112,16 +112,16 @@ defmodule LexLuthor do
   defp push_token lexer, token do
     { tname, tvalue } = token
     token = %Token{ pos: lexer.pos, line: lexer.line, name: tname, value: tvalue }
-    %State{ pos: lexer.pos, line: lexer.line, states: lexer.states, tokens: [ token | lexer.tokens ] }
+    Map.merge lexer, %{tokens: [token | lexer.tokens ]}
   end
 
   defp push_state lexer, state do
-    %State{ pos: lexer.pos, line: lexer.line, states: [ state | lexer.states ], tokens: lexer.tokens }
+    Map.merge lexer, %{states: [state | lexer.states ]}
   end
 
   defp pop_state lexer do
     [ _ | states ] = lexer.states
-    %State{ pos: lexer.pos, line: lexer.line, states: states, tokens: lexer.tokens }
+    Map.merge lexer, %{states: states}
   end
 
   defp rules_for_state rules, state do
