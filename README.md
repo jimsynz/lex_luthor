@@ -1,5 +1,7 @@
 # LexLuthor
 
+![Codeship Build Status](https://codeship.com/projects/c8a305b0-b7e4-0132-ef5c-1e8b2f627676/status?branch=master)
+
 LexLuthor is a Lexer in Elixir (say that 10 times fast) which uses macros to generate a reusable lexers. Good times.
 
 LexLuthor is a state based lexer, meaning that it keeps a state stack which you can push states on and pop states off the stack, which are used to filter the applicable rules for a given state.  For example:
