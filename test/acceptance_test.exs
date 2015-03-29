@@ -46,7 +46,6 @@ defmodule AcceptanceTest do
     {ok, tokens} = ExampleLexer.lex "'foo'\n'bar' 'baz'"
     assert ok == :ok
 
-    IO.inspect tokens
     token = List.last tokens
     assert token.value == "baz"
     assert token.column == 8
