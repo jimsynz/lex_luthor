@@ -4,11 +4,11 @@ defmodule LexLuthor do
   @action_no 0
 
   defmodule State do
-    defstruct pos: 0, line: 1, states: [nil], tokens: []
+    defstruct pos: 0, line: 1, column: 0, states: [nil], tokens: []
   end
 
   defmodule Token do
-    defstruct pos: 0, line: 1, name: nil, value: nil
+    defstruct pos: 0, line: 1, column: 0, name: nil, value: nil
   end
 
   defmacro __using__(_opts) do
@@ -79,9 +79,12 @@ defmodule LexLuthor do
       { :error, _ } ->
         lexer
       _ ->
-        # Increment lexer position
-        line = (String.slice(string, 0, len) |> String.split(~r{(\r|\n|\r\n)}) |> Enum.count) - 1 + lexer.line
-        lexer = Map.merge lexer, %{pos: lexer.pos + len, line: line}
+
+        fragment = String.slice string, 0, len
+        line     = lexer.line + line_number_incrementor fragment
+        column   = column_number lexer, fragment
+
+        lexer = Map.merge lexer, %{pos: lexer.pos + len, line: line, column: column}
 
         # Are we at the end of the string?
         if String.length(string) == len do
@@ -91,6 +94,27 @@ defmodule LexLuthor do
           do_lex module, rules, new_string, lexer
         end
     end
+  end
+
+  defp column_number lexer, match do
+    case Regex.match? ~r/[\r\n]/, match do
+      true ->
+        len = match |> split_on_newlines |> List.last |> String.length
+        case len do
+          0 -> 1
+          _ -> len
+        end
+      false ->
+        lexer.column + String.length match
+    end
+  end
+
+  defp line_number_incrementor match do
+    (match |> split_on_newlines |> Enum.count) - 1
+  end
+
+  def split_on_newlines string do
+    string |> String.split(~r{(\r|\n|\r\n)})
   end
 
   defp process_result(result, lexer) when is_nil(result) do
@@ -111,7 +135,7 @@ defmodule LexLuthor do
 
   defp push_token lexer, token do
     { tname, tvalue } = token
-    token = %Token{ pos: lexer.pos, line: lexer.line, name: tname, value: tvalue }
+    token = %Token{ pos: lexer.pos, line: lexer.line, column: lexer.column, name: tname, value: tvalue }
     Map.merge lexer, %{tokens: [token | lexer.tokens ]}
   end
 

@@ -34,7 +34,7 @@ defmodule AcceptanceTest do
       end
   end
 
-  test "String #{inspect "foo\nbar"} has correct line numbers" do
+  test "String #{inspect "'foo'\n'bar'"} has correct line numbers" do
     {ok, tokens} = ExampleLexer.lex "'foo'\n'bar'"
     assert ok == :ok
 
@@ -42,4 +42,13 @@ defmodule AcceptanceTest do
     assert token.line == 2
   end
 
+  test "String #{inspect "'foo'\n'bar' 'baz'"} has correct column numbers" do
+    {ok, tokens} = ExampleLexer.lex "'foo'\n'bar' 'baz'"
+    assert ok == :ok
+
+    IO.inspect tokens
+    token = List.last tokens
+    assert token.value == "baz"
+    assert token.column == 8
+  end
 end
