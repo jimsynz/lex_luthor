@@ -3,8 +3,15 @@ defmodule LexLuthor.Mixfile do
 
   def project do
     [app: :lex_luthor,
-     version: "0.0.1",
+     version: "0.1.0",
      elixir: "~> 1.0",
+     description: "LexLuthor is a Lexer in Elixir (say that 10 times fast) which uses macros to generate a reusable lexers. Good times.",
+     source_url: "https://github.com/jamesotron/lex_luthor",
+     package: [
+       contributors: ["James Harton"],
+       licenses: ["MIT"],
+       links: %{"Source" => "https://github.com/jamesotron/lex_luthor"}
+     ],
      deps: deps]
   end
 
