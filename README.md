@@ -1,6 +1,6 @@
 # LexLuthor
 
-![Codeship Build Status](https://codeship.com/projects/c8a305b0-b7e4-0132-ef5c-1e8b2f627676/status?branch=master)
+[![Build Status](https://travis-ci.org/jamesotron/lex_luthor.svg)](https://travis-ci.org/jamesotron/lex_luthor)
 
 LexLuthor is a Lexer in Elixir (say that 10 times fast) which uses macros to generate a reusable lexers. Good times.
 
