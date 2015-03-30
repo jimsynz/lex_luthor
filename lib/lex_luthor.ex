@@ -1,8 +1,4 @@
 defmodule LexLuthor do
-
-  @rules []
-  @action_no 0
-
   defmodule State do
     defstruct pos: 0, line: 1, column: 0, states: [nil], tokens: []
   end
@@ -14,6 +10,7 @@ defmodule LexLuthor do
   defmacro __using__(_opts) do
     quote do
       @rules []
+      @action_counter 0
       import LexLuthor
       @before_compile LexLuthor
     end
@@ -28,13 +25,19 @@ defmodule LexLuthor do
   end
 
   defmacro defrule(regex, state, block) do
-    function_name = "_action_#{inspect(regex)}_#{Atom.to_string state}" |> String.to_atom
     quote do
-      def unquote(function_name)(e) do
-        unquote(block).(e)
-      end
+      @action_counter(@action_counter + 1)
+      action_name = "_action_#{@action_counter}" |> String.to_atom
+      block       = unquote(Macro.escape(block))
 
-      @rules(@rules ++ [{ unquote(state), unquote(regex), unquote(function_name) }])
+      defaction = quote do
+        def unquote(Macro.escape(action_name))(e) do
+          unquote(block).(e)
+        end
+      end
+      Module.eval_quoted __MODULE__, defaction
+
+      @rules(@rules ++ [{ unquote(state), unquote(regex), action_name }])
       { :ok, Enum.count(@rules) }
     end
   end
