@@ -153,8 +153,10 @@ defmodule LexLuthor do
 
   defp rules_for_state rules, state do
     Enum.filter rules, fn({rule_state,_,_})->
-      if is_nil(state) do
-        state = :default
+      state = if is_nil(state) do
+        :default
+      else
+        state
       end
       state == rule_state
     end
