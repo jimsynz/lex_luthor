@@ -7,6 +7,7 @@ defmodule LexLuthor.Mixfile do
      elixir: "~> 1.0",
      description: "LexLuthor is a Lexer in Elixir (say that 10 times fast) which uses macros to generate a reusable lexers. Good times.",
      source_url: "https://github.com/jamesotron/lex_luthor",
+     preferred_cli_env: [inch: :docs],
      package: [
        contributors: ["James Harton"],
        licenses: ["MIT"],
@@ -33,7 +34,8 @@ defmodule LexLuthor.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [
-      {:ex_doc, ">= 0.0.0", only: :dev}
+      {:ex_doc, ">= 0.0.0", only: :dev},
+      {:inch_ex, only: :docs}
     ]
   end
 end

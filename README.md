@@ -1,6 +1,7 @@
 # LexLuthor
 
 [![Build Status](https://travis-ci.org/jamesotron/lex_luthor.svg)](https://travis-ci.org/jamesotron/lex_luthor)
+[![Inline docs](http://inch-ci.org/github/jamesotron/lex_luthor.svg)](http://inch-ci.org/github/jamesotron/lex_luthor)
 
 LexLuthor is a Lexer in Elixir (say that 10 times fast) which uses macros to generate a reusable lexers. Good times.
 
