@@ -13,7 +13,7 @@ defmodule LexLuthor.Mixfile do
        licenses: ["MIT"],
        links: %{"Source" => "https://github.com/jamesotron/lex_luthor"}
      ],
-     deps: deps]
+     deps: deps()]
   end
 
   # Configuration for the OTP application

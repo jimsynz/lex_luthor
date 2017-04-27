@@ -1,5 +1,4 @@
 defmodule RejectionTest do
-  import TestHelpers
   use ExUnit.Case, async: true
 
   test "string not in language fails" do
