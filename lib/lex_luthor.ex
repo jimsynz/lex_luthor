@@ -1,11 +1,33 @@
 defmodule LexLuthor do
-  defmodule State do
-    defstruct pos: 0, line: 1, column: 0, states: [nil], tokens: []
-  end
+  alias LexLuthor.Runner
 
-  defmodule Token do
-    defstruct pos: 0, line: 1, column: 0, name: nil, value: nil
-  end
+  @moduledoc """
+  LexLuthor is a Lexer in Elixir (say that 10 times fast) which uses macros to generate a reusable lexers. Good times.
+
+  LexLuthor is a state based lexer, meaning that it keeps a state stack which you can push states on and pop states off the stack, which are used to filter the applicable rules for a given state.  For example:
+
+      iex> defmodule StringLexer do
+      ...>   use LexLuthor
+      ...>   defrule ~r/^'/,              fn(_) -> :STRING end
+      ...>   defrule ~r/^[^']+/, :STRING, fn(e) -> { :string, e } end
+      ...>   defrule ~r/^'/,     :STRING, fn(_) -> nil end
+      ...> end
+      ...> StringLexer.lex("'foo'")
+      {:ok, [%LexLuthor.Token{column: 1, line: 1, name: :string, pos: 1, value: "foo"}]}
+
+  Rules are defined by a regular expression, an optional state (as an atom) and an action in the form of an anonymous function.
+
+  When passed the string `'foo'`, the lexer starts in the `:default` state, so it filters for rules in the default state (the first rule, as it doesn't specify a state), then it filters the available rules by the longest matching regular expression.  In this case, since we have only one rule (which happens to match) it's automatically the longest match.
+
+  Once the longest match is found, then it's action is executed and the return value matched:
+    - If the return value is a single atom then that atom is assumed to be a state and push onto the top of the state stack.
+    - If the return value is a two element tuple then the first element is expected to be an atom (the token name) and the second element a value for this token.
+    - If the return value is `nil` then the top state is popped off the state stack.
+
+  If lexing succeeds then you will receive an `:ok` tuple with the second value being a list of `LexLuthor.Token` structs.
+
+  If lexing fails then you will receive an `:error` tuple which a reason and position.
+  """
 
   defmacro __using__(_opts) do
     quote do
@@ -19,164 +41,46 @@ defmodule LexLuthor do
   defmacro __before_compile__(_env) do
     quote do
       def lex string do
-        LexLuthor.lex __MODULE__, @rules, string
+        Runner.lex __MODULE__, @rules, string
       end
     end
   end
 
-  defmacro defrule(regex, state, block) do
+  @doc """
+  Define a lexing rule for a specific state.
+
+  - `regex` a regular expression for matching against the input string.
+  - `state` the lexer state in which this rule applies.
+  - `action` the function to execute when this rule is applied.
+  """
+  @spec defrule(Regex.t, atom, (String.t -> atom | nil | {atom, any})) :: {:ok, non_neg_integer}
+  defmacro defrule(regex, state, action) do
     quote do
       @action_counter(@action_counter + 1)
       action_name = "_action_#{@action_counter}" |> String.to_atom
-      block       = unquote(Macro.escape(block))
+      action       = unquote(Macro.escape(action))
 
       defaction = quote do
         def unquote(Macro.escape(action_name))(e) do
-          unquote(block).(e)
+          unquote(action).(e)
         end
       end
       Module.eval_quoted __MODULE__, defaction
 
-      @rules(@rules ++ [{ unquote(state), unquote(regex), action_name }])
-      { :ok, Enum.count(@rules) }
+      @rules(@rules ++ [{unquote(state), unquote(regex), action_name}])
+      {:ok, Enum.count(@rules)}
     end
   end
 
-  defmacro defrule(regex, block) do
+  @doc """
+  Define a lexing rule applicable to the default state.
+
+  - `regex` a regular expression for matching against the input string.
+  - `action` the function to execute when this rule is applied.
+  """
+  defmacro defrule(regex, action) do
     quote do
-      defrule unquote(regex), :default, unquote(block)
+      defrule unquote(regex), :default, unquote(action)
     end
   end
-
-  def lex module, rules, string do
-    do_lex module, rules, string, %State{}
-  end
-
-  defp do_lex module, rules, string, lexer do
-    [ current_state | _rest ] = lexer.states
-
-    # Find the longest matching rule. This could
-    # probably be made a whole lot less enumeratey.
-    matches = rules_for_state(rules, current_state)
-      |> matching_rules(string)
-      |> apply_matches(string)
-      |> longest_match_first
-
-    process_matches module, rules, matches, string, lexer, Enum.count(matches)
-  end
-
-  defp process_matches(_, _, _, string, _, count) when count == 0 do
-    { :error, "String not in language: #{inspect string}"}
-  end
-
-  defp process_matches(module, rules, matches, string, lexer, count) when count > 0 do
-    match = Enum.at matches, 0
-
-    # Execute the matches' action.
-    {len, value, fun} = match
-    result = apply(module, fun, [value])
-
-    lexer = process_result result, lexer
-
-    case lexer do
-      { :error, _ } ->
-        lexer
-      _ ->
-
-        fragment = String.slice string, 0, len
-        line     = lexer.line + line_number_incrementor fragment
-        column   = column_number lexer, fragment
-
-        lexer = Map.merge lexer, %{pos: lexer.pos + len, line: line, column: column}
-
-        # Are we at the end of the string?
-        if String.length(string) == len do
-          { :ok, Enum.reverse lexer.tokens }
-        else
-          { _ , new_string } = String.split_at string, len
-          do_lex module, rules, new_string, lexer
-        end
-    end
-  end
-
-  defp column_number lexer, match do
-    case Regex.match? ~r/[\r\n]/, match do
-      true ->
-        len = match |> split_on_newlines |> List.last |> String.length
-        case len do
-          0 -> 1
-          _ -> len
-        end
-      false ->
-        lexer.column + String.length match
-    end
-  end
-
-  defp line_number_incrementor match do
-    (match |> split_on_newlines |> Enum.count) - 1
-  end
-
-  def split_on_newlines string do
-    string |> String.split(~r{(\r|\n|\r\n)})
-  end
-
-  defp process_result(result, lexer) when is_nil(result) do
-    pop_state lexer
-  end
-
-  defp process_result(result, lexer) when is_atom(result) do
-    push_state lexer, result
-  end
-
-  defp process_result(result, lexer) when is_tuple(result) do
-    push_token lexer, result
-  end
-
-  defp process_result result, _ do
-    { :error, "Invalid result from action: #{inspect result}"}
-  end
-
-  defp push_token lexer, token do
-    { tname, tvalue } = token
-    token = %Token{ pos: lexer.pos, line: lexer.line, column: lexer.column, name: tname, value: tvalue }
-    Map.merge lexer, %{tokens: [token | lexer.tokens ]}
-  end
-
-  defp push_state lexer, state do
-    Map.merge lexer, %{states: [state | lexer.states ]}
-  end
-
-  defp pop_state lexer do
-    [ _ | states ] = lexer.states
-    Map.merge lexer, %{states: states}
-  end
-
-  defp rules_for_state rules, state do
-    Enum.filter rules, fn({rule_state,_,_})->
-      state = if is_nil(state) do
-        :default
-      else
-        state
-      end
-      state == rule_state
-    end
-  end
-
-  defp matching_rules rules, string do
-    Enum.filter rules, fn({_,regex,_})->
-      Regex.match?(regex, string)
-    end
-  end
-
-  defp apply_matches rules, string do
-    Enum.map rules, fn({_,regex,fun})->
-      [match] = Regex.run(regex,string, capture: :first)
-      { String.length(match), match, fun }
-    end
-  end
-
-  defp longest_match_first matches do
-    Enum.sort_by matches, fn({len,_,_})-> len end, &>=/2
-  end
-
 end

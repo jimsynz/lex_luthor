@@ -35,7 +35,8 @@ defmodule LexLuthor.Mixfile do
   defp deps do
     [
       {:ex_doc, ">= 0.0.0", only: :dev},
-      {:inch_ex, only: :docs}
+      {:inch_ex, only: :docs},
+      {:credo,   only: ~w(dev test)a}
     ]
   end
 end
