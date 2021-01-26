@@ -60,12 +60,9 @@ defmodule LexLuthor.Runner do
                                    line:   line,
                                    column: column})
 
-        # Are we at the end of the string?
-        if String.length(string) == len do
-          { :ok, Enum.reverse lexer.tokens }
-        else
-          { _ , new_string } = String.split_at string, len
-          do_lex module, rules, new_string, lexer
+        case String.split_at(string, len) do
+          {_, ""} -> {:ok, Enum.reverse(lexer.tokens)}
+          {_, new_string} -> do_lex(module, rules, new_string, lexer)
         end
     end
   end
