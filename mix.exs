@@ -2,18 +2,21 @@ defmodule LexLuthor.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :lex_luthor,
-     version: "0.1.1",
-     elixir: "~> 1.0",
-     description: "LexLuthor is a Lexer in Elixir (say that 10 times fast) which uses macros to generate a reusable lexers. Good times.",
-     source_url: "https://github.com/jamesotron/lex_luthor",
-     preferred_cli_env: [inch: :docs],
-     package: [
-       contributors: ["James Harton"],
-       licenses: ["MIT"],
-       links: %{"Source" => "https://github.com/jamesotron/lex_luthor"}
-     ],
-     deps: deps()]
+    [
+      app: :lex_luthor,
+      version: "0.1.1",
+      elixir: "~> 1.0",
+      description:
+        "LexLuthor is a Lexer in Elixir (say that 10 times fast) which uses macros to generate a reusable lexers. Good times.",
+      source_url: "https://github.com/jamesotron/lex_luthor",
+      preferred_cli_env: [inch: :docs],
+      package: [
+        contributors: ["James Harton"],
+        licenses: ["MIT"],
+        links: %{"Source" => "https://github.com/jamesotron/lex_luthor"}
+      ],
+      deps: deps()
+    ]
   end
 
   # Configuration for the OTP application
@@ -35,8 +38,7 @@ defmodule LexLuthor.Mixfile do
   defp deps do
     [
       {:ex_doc, ">= 0.0.0", only: :dev},
-      {:inch_ex, only: :docs},
-      {:credo,   only: ~w(dev test)a}
+      {:credo, "~> 1.5", only: ~w(dev test)a}
     ]
   end
 end
