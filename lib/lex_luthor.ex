@@ -40,8 +40,8 @@ defmodule LexLuthor do
 
   defmacro __before_compile__(_env) do
     quote do
-      def lex string do
-        Runner.lex __MODULE__, @rules, string
+      def lex(string) do
+        Runner.lex(__MODULE__, @rules, string)
       end
     end
   end
@@ -53,21 +53,24 @@ defmodule LexLuthor do
   - `state` the lexer state in which this rule applies.
   - `action` the function to execute when this rule is applied.
   """
-  @spec defrule(Regex.t, atom, (String.t -> atom | nil | {atom, any})) :: {:ok, non_neg_integer}
+  @spec defrule(Regex.t(), atom, (String.t() -> atom | nil | {atom, any})) ::
+          {:ok, non_neg_integer}
   defmacro defrule(regex, state, action) do
     quote do
-      @action_counter(@action_counter + 1)
-      action_name = "_action_#{@action_counter}" |> String.to_atom
-      action       = unquote(Macro.escape(action))
+      @action_counter @action_counter + 1
+      action_name = "_action_#{@action_counter}" |> String.to_atom()
+      action = unquote(Macro.escape(action))
 
-      defaction = quote do
-        def unquote(Macro.escape(action_name))(e) do
-          unquote(action).(e)
+      defaction =
+        quote do
+          def unquote(Macro.escape(action_name))(e) do
+            unquote(action).(e)
+          end
         end
-      end
-      Module.eval_quoted __MODULE__, defaction
 
-      @rules(@rules ++ [{unquote(state), unquote(regex), action_name}])
+      Module.eval_quoted(__MODULE__, defaction)
+
+      @rules @rules ++ [{unquote(state), unquote(regex), action_name}]
       {:ok, Enum.count(@rules)}
     end
   end
@@ -80,7 +83,7 @@ defmodule LexLuthor do
   """
   defmacro defrule(regex, action) do
     quote do
-      defrule unquote(regex), :default, unquote(action)
+      defrule(unquote(regex), :default, unquote(action))
     end
   end
 end
