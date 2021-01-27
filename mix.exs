@@ -8,12 +8,12 @@ defmodule LexLuthor.Mixfile do
       elixir: "~> 1.0",
       description:
         "LexLuthor is a Lexer in Elixir (say that 10 times fast) which uses macros to generate a reusable lexers. Good times.",
-      source_url: "https://github.com/jamesotron/lex_luthor",
+      source_url: "https://github.com/jimsynz/lex_luthor",
       preferred_cli_env: [inch: :docs],
       package: [
         contributors: ["James Harton"],
         licenses: ["MIT"],
-        links: %{"Source" => "https://github.com/jamesotron/lex_luthor"}
+        links: %{"Source" => "https://github.com/jimsynz/lex_luthor"}
       ],
       deps: deps()
     ]
