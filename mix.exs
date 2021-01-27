@@ -4,7 +4,7 @@ defmodule LexLuthor.Mixfile do
   def project do
     [
       app: :lex_luthor,
-      version: "0.1.1",
+      version: "0.1.2",
       elixir: "~> 1.0",
       description:
         "LexLuthor is a Lexer in Elixir (say that 10 times fast) which uses macros to generate a reusable lexers. Good times.",
