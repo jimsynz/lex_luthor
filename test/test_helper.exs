@@ -46,6 +46,10 @@ defmodule ExampleLexer do
 
   # bogus action
   defrule(~r/^BOGUS_ACTION/, fn _ -> "WAT" end)
+
+  # double results
+  defrule(~r/abc/, fn _ -> [:abc, {:abc, "abc"}] end)
+  defrule(~r/cba/, :abc, fn _ -> [{:cba, "cba"}, nil] end)
 end
 
 ExUnit.start()

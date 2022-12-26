@@ -50,4 +50,9 @@ defmodule AcceptanceTest do
     assert token.value == "baz"
     assert token.column == 8
   end
+
+  test "String #{inspect("abc")} emits a tokens _and_ handles state changes" do
+    assert {:ok, tokens} = ExampleLexer.lex("abccba")
+    assert [%{name: :abc, value: "abc"}, %{name: :cba, value: "cba"}] = tokens
+  end
 end

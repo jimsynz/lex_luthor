@@ -101,6 +101,11 @@ defmodule LexLuthor.Runner do
     push_token(lexer, result)
   end
 
+  defp process_result(results, lexer) when is_list(results) do
+    results
+    |> Enum.reduce(lexer, &process_result/2)
+  end
+
   defp process_result(result, _) do
     {:error, "Invalid result from action: #{inspect(result)}"}
   end
