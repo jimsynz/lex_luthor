@@ -41,7 +41,8 @@ defmodule LexLuthor.Mixfile do
       {:credo, "~> 1.5", only: ~w[dev test]a},
       {:ex_check, "~> 0.15.0", only: ~w[dev test]a},
       {:ex_doc, ">= 0.0.0", only: ~w[dev test]a},
-      {:git_ops, "~> 2.4", only: ~w[dev test]a, runtime: false}
+      {:git_ops, "~> 2.4", only: ~w[dev test]a, runtime: false},
+      {:mix_audit, "~> 2.1", only: ~w[dev test]a}
     ]
   end
 end
