@@ -1,19 +1,20 @@
 defmodule LexLuthor.Mixfile do
   use Mix.Project
 
+  @version "0.1.2"
+
   def project do
     [
       app: :lex_luthor,
-      version: "0.1.2",
-      elixir: "~> 1.0",
+      version: @version,
+      elixir: "~> 1.11",
       description:
         "LexLuthor is a Lexer in Elixir (say that 10 times fast) which uses macros to generate a reusable lexers. Good times.",
-      source_url: "https://github.com/jimsynz/lex_luthor",
-      preferred_cli_env: [inch: :docs],
+      source_url: "https://code.harton.nz/james/lex_luthor",
       package: [
-        contributors: ["James Harton"],
+        maintainers: ["James Harton <james@harton.nz>"],
         licenses: ["MIT"],
-        links: %{"Source" => "https://github.com/jimsynz/lex_luthor"}
+        links: %{"Source" => "https://code.harton.nz/james/lex_luthor"}
       ],
       deps: deps()
     ]
@@ -23,7 +24,7 @@ defmodule LexLuthor.Mixfile do
   #
   # Type `mix help compile.app` for more information
   def application do
-    [applications: [:logger]]
+    [extra_applications: [:logger]]
   end
 
   # Dependencies can be Hex packages:
@@ -37,8 +38,10 @@ defmodule LexLuthor.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [
-      {:ex_doc, ">= 0.0.0", only: :dev},
-      {:credo, "~> 1.5", only: ~w(dev test)a}
+      {:credo, "~> 1.5", only: ~w[dev test]a},
+      {:ex_check, "~> 0.15.0", only: ~w[dev test]a},
+      {:ex_doc, ">= 0.0.0", only: ~w[dev test]a},
+      {:git_ops, "~> 2.4", only: ~w[dev test]a, runtime: false}
     ]
   end
 end

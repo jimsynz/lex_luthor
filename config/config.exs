@@ -22,3 +22,11 @@ import Config
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env}.exs"
+
+config :git_ops,
+  mix_project: Mix.Project.get!(),
+  changelog_file: "CHANGELOG.md",
+  repository_url: "https://code.harton.nz/james/lex_luthor",
+  manage_mix_version?: true,
+  manage_readme_version: "README.md",
+  version_tag_prefix: "v"
