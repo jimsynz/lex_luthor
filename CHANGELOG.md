@@ -5,7 +5,7 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
-## [v0.1.2](https://code.harton.nz/james/lex_luthor/compare/v0.1.2...v0.1.2) (2023-07-25)
+## [v0.1.2](https://harton.dev/james/lex_luthor/compare/v0.1.2...v0.1.2) (2023-07-25)
 
 
 

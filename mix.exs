@@ -10,11 +10,11 @@ defmodule LexLuthor.Mixfile do
       elixir: "~> 1.11",
       description:
         "LexLuthor is a Lexer in Elixir (say that 10 times fast) which uses macros to generate a reusable lexers. Good times.",
-      source_url: "https://code.harton.nz/james/lex_luthor",
+      source_url: "https://harton.dev/james/lex_luthor",
       package: [
         maintainers: ["James Harton <james@harton.nz>"],
         licenses: ["MIT"],
-        links: %{"Source" => "https://code.harton.nz/james/lex_luthor"}
+        links: %{"Source" => "https://harton.dev/james/lex_luthor"}
       ],
       deps: deps()
     ]

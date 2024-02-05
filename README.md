@@ -32,7 +32,7 @@ If lexing fails then you will receive an `:error` tuple which a reason and posit
 
 ## Contributing
 
-1. Fork it ( https://code.harton.nz/james/lex_luthor/fork )
+1. Fork it ( https://harton.dev/james/lex_luthor/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
