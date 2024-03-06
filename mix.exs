@@ -14,9 +14,18 @@ defmodule LexLuthor.Mixfile do
       package: [
         maintainers: ["James Harton <james@harton.nz>"],
         licenses: ["MIT"],
-        links: %{"Source" => "https://harton.dev/james/lex_luthor"}
+        links: %{
+          "Source" => "https://harton.dev/james/lex_luthor",
+          "GitHub" => "https://github.com/jimsynz/lex_luthor",
+          "Changelog" => "https://docs.harton.nz/james/lex_luthor/changelog.html",
+          "Sponsor" => "https://github.com/sponsors/jimsynz"
+        }
       ],
-      deps: deps()
+      deps: deps(),
+      docs: [
+        main: "readme",
+        extras: ["README.md", "CHANGELOG.md"]
+      ]
     ]
   end
 

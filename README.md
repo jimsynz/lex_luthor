@@ -1,6 +1,6 @@
 # LexLuthor
 
-[![Build Status](https://drone.harton.nz/api/badges/james/lex_luthor/status.svg)](https://drone.harton.nz/james/lex_luthor)
+[![Build Status](https://drone.harton.dev/api/badges/james/lex_luthor/status.svg)](https://drone.harton.dev/james/lex_luthor)
 
 LexLuthor is a Lexer in Elixir (say that 10 times fast) which uses macros to generate a reusable lexers. Good times.
 
@@ -30,10 +30,26 @@ If lexing succeeds then you will receive an `:ok` tuple with the second value be
 
 If lexing fails then you will receive an `:error` tuple which a reason and position.
 
-## Contributing
+## Installation
 
-1. Fork it ( https://harton.dev/james/lex_luthor/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
+LexLuthor is [available in Hex](https://hex.pm/packages/lex_luthor), the package
+can be installed by adding `lex_luthor` to your list of dependencies in
+`mix.exs`:
+
+```elixir
+def deps do
+  [
+    {:lex_luthor, "~> 0.1.2"}
+  ]
+end
+```
+
+Documentation for the latest release can be found on
+[HexDocs](https://hexdocs.pm/lex_luthor) and for the `main` branch on
+[docs.harton.nz](https://docs.harton.nz/james/lex_luthor).
+
+## Github Mirror
+
+This repository is mirrored [on Github](https://github.com/jimsynz/lex_luthor)
+from it's primary location [on my Forejo instance](https://harton.dev/james/lex_luthor).
+Feel free to raise issues and open PRs on Github.
