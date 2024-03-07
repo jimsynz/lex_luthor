@@ -1,6 +1,8 @@
 # LexLuthor
 
 [![Build Status](https://drone.harton.dev/api/badges/james/lex_luthor/status.svg)](https://drone.harton.dev/james/lex_luthor)
+[![Hex.pm](https://img.shields.io/hexpm/v/lex_luthor.svg)](https://hex.pm/packages/lex_luthor)
+[![Hippocratic License HL3-FULL](https://img.shields.io/static/v1?label=Hippocratic%20License&message=HL3-FULL&labelColor=5e2751&color=bc8c3d)](https://firstdonoharm.dev/version/3/0/full.html)
 
 LexLuthor is a Lexer in Elixir (say that 10 times fast) which uses macros to generate a reusable lexers. Good times.
 
